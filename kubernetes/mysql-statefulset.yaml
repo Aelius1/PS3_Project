@@ -3,49 +3,57 @@ kind: StatefulSet
 metadata:
   name: mysql
   namespace: default
+
 spec:
   serviceName: mysql
   replicas: 1
+
   selector:
     matchLabels:
       app: mysql
+
   template:
     metadata:
       labels:
         app: mysql
+
     spec:
       containers:
       - name: mysql
         image: mysql:5.7
+
         resources:
-         requests:
-          memory: "512Mi"
-          cpu: "250m"
-         limits:
-          memory: "2Gi"
-           cpu: "1000m"
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+
         ports:
         - containerPort: 3306
+
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-secret
               key: MYSQL_ROOT_PASSWORD
+
         - name: MYSQL_DATABASE
           value: wordpress
+
         volumeMounts:
         - name: mysql-storage
           mountPath: /var/lib/mysql
+
   volumeClaimTemplates:
   - metadata:
       name: mysql-storage
     spec:
       accessModes:
-        - ReadWriteOnce
+      - ReadWriteOnce
+
       resources:
-        memory: "512Mi"
-        cpu: "250m"
-      limits:
-        memory: "2Gi"
-        cpu: "1000m"
+        requests:
+          storage: 5Gi
